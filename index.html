@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NareshIT — Gen AI, Agentic AI &amp; FDE Interest Registration</title>
+<style>
+  :root {
+    --bg: #0f1220;
+    --card: #1a1f35;
+    --accent: #6c8cff;
+    --accent-2: #9b6cff;
+    --text: #e8ebf5;
+    --muted: #9aa3c0;
+    --border: #2a3150;
+    --ok: #3ddc97;
+    --err: #ff6b6b;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: radial-gradient(1200px 600px at 20% -10%, #23294a 0%, var(--bg) 55%);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 24px 16px 60px;
+  }
+  .wrap { max-width: 820px; margin: 0 auto; }
+  header { text-align: center; margin-bottom: 28px; }
+  .brand {
+    display: inline-flex; align-items: center; gap: 10px;
+    margin-bottom: 12px; padding: 8px 16px 8px 8px; border-radius: 999px;
+    background: #fff; box-shadow: 0 6px 18px rgba(0,0,0,.25);
+  }
+  .brand img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+  .brand b { color: #1a3c8f; font-size: 16px; font-weight: 800; letter-spacing: .3px; }
+  .brand b em { color: #e2372f; font-style: normal; }
+  .site-footer {
+    margin-top: 32px; padding: 22px; border-radius: 16px;
+    background: var(--card); border: 1px solid var(--border);
+    text-align: center; color: var(--muted); font-size: 13px; line-height: 1.7;
+  }
+  .site-footer .fbrand { color: var(--text); font-weight: 700; font-size: 15px; }
+  .site-footer .fbrand em { color: #e2372f; font-style: normal; }
+  .site-footer a { color: var(--accent); text-decoration: none; }
+  .site-footer a:hover { text-decoration: underline; }
+  .site-footer .tagline { margin: 4px 0 10px; }
+  .site-footer .row2 { display: flex; gap: 8px 18px; justify-content: center; flex-wrap: wrap; }
+  .site-footer .copy { margin-top: 12px; opacity: .8; font-size: 12px; }
+  .site-footer .credit { color: var(--text); font-weight: 600; }
+  header h1 {
+    font-size: 28px; margin: 0 0 6px;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  header p { color: var(--muted); margin: 0; }
+  header p strong { color: var(--text); font-weight: 700; }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 22px;
+    margin-bottom: 24px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.25);
+  }
+  .card h2 { margin: 0 0 16px; font-size: 18px; }
+  label { display: block; font-size: 13px; color: var(--muted); margin: 12px 0 6px; }
+  input, select {
+    width: 100%; padding: 11px 13px; border-radius: 10px;
+    border: 1px solid var(--border); background: #12162a; color: var(--text);
+    font-size: 14px; outline: none; transition: border .15s;
+  }
+  input:focus, select:focus { border-color: var(--accent); }
+  .row { display: flex; gap: 14px; flex-wrap: wrap; }
+  .row > div { flex: 1 1 220px; }
+  button {
+    margin-top: 18px; width: 100%; padding: 12px; border: none; border-radius: 10px;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    color: #fff; font-size: 15px; font-weight: 600; cursor: pointer;
+    transition: transform .08s, opacity .15s;
+  }
+  button:hover { opacity: .92; }
+  button:active { transform: translateY(1px); }
+  button:disabled { opacity: .55; cursor: not-allowed; }
+  .msg { margin-top: 12px; font-size: 14px; min-height: 18px; }
+  .msg.ok { color: var(--ok); }
+  .msg.err { color: var(--err); }
+  table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 14px; }
+  th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--border); }
+  th { color: var(--muted); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
+  td.num { color: var(--muted); width: 34px; }
+  .mode-tag { padding: 3px 9px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+  .mode-online { background: rgba(61,220,151,.15); color: var(--ok); }
+  .mode-offline { background: rgba(155,108,255,.18); color: var(--accent-2); }
+  .course-tag { padding: 3px 9px; border-radius: 999px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+  .course-genai { background: rgba(108,140,255,.18); color: var(--accent); }
+  .course-fde { background: rgba(255,193,86,.18); color: #ffc156; }
+  .small { font-size: 12px; color: var(--muted); }
+  .refresh { background: none; border: 1px solid var(--border); color: var(--muted); width: auto; padding: 6px 14px; font-size: 13px; margin: 0; }
+  .refresh:hover { color: var(--text); }
+  .list-head { display: flex; justify-content: space-between; align-items: center; }
+  .badge { font-size: 12px; color: var(--muted); }
+  .empty { color: var(--muted); text-align: center; padding: 20px 0; }
+  /* Fixed logos in the top-left and top-right corners.
+     The right one is the hidden admin entry: double-click / double-tap it. */
+  .corner-logo {
+    position: fixed; top: 14px; z-index: 60;
+    width: 52px; height: 52px; border-radius: 50%;
+    object-fit: cover; background: #fff; padding: 3px;
+    box-shadow: 0 6px 18px rgba(0,0,0,.3);
+    -webkit-user-drag: none; user-select: none;
+  }
+  .corner-logo.left  { left: 16px; }
+  .corner-logo.right { right: 16px; cursor: pointer; transition: box-shadow .15s, transform .08s; }
+  .corner-logo.right:hover { box-shadow: 0 6px 22px rgba(108,140,255,.55); }
+  .corner-logo.right:active { transform: scale(.94); }
+  @media (max-width: 560px) {
+    .corner-logo { width: 40px; height: 40px; top: 10px; }
+    .corner-logo.left { left: 10px; }
+    .corner-logo.right { right: 10px; }
+  }
+</style>
+</head>
+<body>
+<img class="corner-logo left" src="nareshit-logo.jpg" alt="NareshIT logo" />
+<img class="corner-logo right" id="adminLogo" src="nareshit-logo.jpg" alt="NareshIT logo" title="NareshIT" />
+<div class="wrap">
+  <header>
+    <div class="brand"><img src="nareshit-logo.jpg" alt="NareshIT logo" /><b>Naresh<em>IT</em></b></div>
+    <h1>Gen AI &amp; Agentic AI · FDE — Interest Registration</h1>
+    <p>For current <strong>Multi-Cloud DevOps</strong> students of <strong>Veera sir</strong> — register your interest for the upcoming <strong>Gen AI &amp; Agentic AI</strong> or <strong>FDE</strong> batch.</p>
+  </header>
+
+  <!-- Registration form -->
+  <div class="card">
+    <h2>Register your interest</h2>
+    <form id="regForm">
+      <label for="course">Course you are interested in</label>
+      <select id="course" name="course" required>
+        <option value="">Select…</option>
+        <option value="Gen AI &amp; Agentic AI">Gen AI &amp; Agentic AI</option>
+        <option value="FDE">FDE</option>
+      </select>
+
+      <label for="name">Full name</label>
+      <input id="name" name="name" type="text" placeholder="Your full name" required />
+
+      <div class="row">
+        <div>
+          <label for="batch">Batch timing</label>
+          <select id="batch" name="batch" required>
+            <option value="">Select…</option>
+            <option value="7:30 AM">7:30 AM</option>
+            <option value="9:00 AM">9:00 AM</option>
+            <option value="10:30 AM">10:30 AM</option>
+            <option value="7:30 PM">7:30 PM</option>
+          </select>
+        </div>
+        <div>
+          <label for="mode">Preferred mode</label>
+          <select id="mode" name="mode" required>
+            <option value="">Select…</option>
+            <option value="Online">Online</option>
+            <option value="Offline">Offline</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row">
+        <div style="flex: 0 1 50%; max-width: 50%;">
+          <label for="studentType">Student type</label>
+          <select id="studentType" name="studentType" required>
+            <option value="">Select…</option>
+            <option value="Currently in DevOps batch (running)">Currently in DevOps batch (running)</option>
+            <option value="Completed DevOps batch">Completed DevOps batch</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" placeholder="you@example.com" required />
+        </div>
+        <div>
+          <label for="mobile">Mobile number</label>
+          <input id="mobile" name="mobile" type="tel" placeholder="10-digit mobile" pattern="[0-9]{10}" maxlength="10" required />
+        </div>
+      </div>
+
+      <button type="submit" id="submitBtn">Submit registration</button>
+      <div class="msg" id="formMsg"></div>
+    </form>
+  </div>
+
+  <!-- Registrations list -->
+  <div class="card">
+    <div class="list-head">
+      <h2 style="margin:0;">Registered students</h2>
+      <button class="refresh" id="refreshBtn" type="button">↻ Refresh</button>
+    </div>
+    <p class="badge">Public view — email & mobile are hidden.</p>
+    <p class="msg err" id="verWarn" style="display:none;"></p>
+    <input id="search" type="text" placeholder="🔍 Search by name, course, batch timing, or mode…" style="margin:6px 0 4px;" />
+    <div id="tableWrap">
+      <p class="empty" id="loadingMsg">Loading…</p>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="fbrand">Naresh<em>IT</em> — Naresh i Technologies</div>
+    <div class="tagline">No.1 Software Training Institute — Classroom &amp; Online Training</div>
+    <div class="row2">
+      <span>📍 2nd Floor, Durga Bhavani Plaza, Ameerpet, Hyderabad</span>
+      <span>📞 040-2374 6666</span>
+      <span>💬 +91-8179191999</span>
+    </div>
+    <div class="row2" style="margin-top:6px;">
+      <a href="https://nareshit.in/" target="_blank" rel="noopener">nareshit.in</a>
+      <a href="https://www.youtube.com/channel/UC4o8Fdpv3g_AjgShAeivqpA" target="_blank" rel="noopener">YouTube</a>
+      <a href="https://t.me/nareshit" target="_blank" rel="noopener">Telegram</a>
+      <a href="https://in.linkedin.com/company/naresh-i-technologies" target="_blank" rel="noopener">LinkedIn</a>
+    </div>
+    <div class="copy">Gen AI &amp; Agentic AI · FDE batches · Guided by <span class="credit">Veera sir</span> · © 2026 Naresh i Technologies</div>
+  </footer>
+</div>
+
+<script>
+  // ====== CONFIG ======
+  // Paste your deployed Apps Script Web App URL here (ends with /exec)
+  const API_URL = "https://script.google.com/macros/s/AKfycbxpgCF-kOOlhp9mOfHeHTBlojbCcQ2KOoGMUXT_eSCAfbJgmmAp0PUIZ005YausISn-/exec";
+  // Must match VERSION in Code.gs. If the server reports anything else, the
+  // Apps Script deployment is stale and needs a new version deployed.
+  const EXPECTED_VERSION = "v4-batchtext";
+  // =====================
+
+  let currentRows = []; // last loaded rows (for search)
+
+  const $ = (id) => document.getElementById(id);
+
+  // ---- Disable right-click (context menu) across the page ----
+  document.addEventListener("contextmenu", (e) => e.preventDefault());
+
+  // ---- Hidden admin entry: double-click / double-tap the top-right logo ----
+  (function () {
+    const logo = $("adminLogo");
+    if (!logo) return;
+    let lastTap = 0;
+
+    function openAdmin() { window.location.href = "admin.html"; }
+
+    // Desktop double-click.
+    logo.addEventListener("dblclick", openAdmin);
+
+    // Touch devices: detect two taps within 400ms (dblclick is unreliable there).
+    logo.addEventListener("touchend", (e) => {
+      const now = Date.now();
+      if (now - lastTap < 400) {
+        e.preventDefault();
+        lastTap = 0;
+        openAdmin();
+      } else {
+        lastTap = now;
+      }
+    });
+  })();
+
+  // ---- Submit registration ----
+  $("regForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const btn = $("submitBtn");
+    const msg = $("formMsg");
+    msg.textContent = ""; msg.className = "msg";
+
+    const data = {
+      action: "register",
+      name: $("name").value.trim(),
+      batch: $("batch").value.trim(),
+      email: $("email").value.trim(),
+      mobile: $("mobile").value.trim(),
+      mode: $("mode").value,
+      studentType: $("studentType").value,
+      course: $("course").value
+    };
+
+    if (!/^[0-9]{10}$/.test(data.mobile)) {
+      msg.textContent = "Please enter a valid 10-digit mobile number.";
+      msg.className = "msg err";
+      return;
+    }
+
+    btn.disabled = true; btn.textContent = "Submitting… (may take a few seconds)";
+    try {
+      const res = await postJSON(data);
+      if (res.ok) {
+        msg.textContent = "✅ Registered successfully! Thank you.";
+        msg.className = "msg ok";
+        $("regForm").reset();
+        loadList();
+      } else {
+        msg.textContent = res.error || "Something went wrong. Try again.";
+        msg.className = "msg err";
+      }
+    } catch (err) {
+      // Show the real reason — a blank "network error" hides stale deployments,
+      // Google sign-in pages and HTML error responses.
+      msg.textContent = "Could not submit: " + (err && err.message ? err.message : err);
+      msg.className = "msg err";
+    } finally {
+      btn.disabled = false; btn.textContent = "Submit registration";
+    }
+  });
+
+  $("refreshBtn").addEventListener("click", loadList);
+  $("search").addEventListener("input", renderTable);
+
+  // ---- Load registrations list (public/masked) ----
+  async function loadList() {
+    const wrap = $("tableWrap");
+    wrap.innerHTML = '<p class="empty">Loading…</p>';
+    try {
+      const res = await fetch(API_URL + "?action=list");
+      const json = await parseJSON(res);
+      currentRows = json.data || [];
+      checkVersion(json.version);
+      renderTable();
+    } catch (err) {
+      wrap.innerHTML = '<p class="empty">Could not load registrations: ' +
+        esc(err && err.message ? err.message : err) + '</p>';
+    }
+  }
+
+  // Warns when the deployed Apps Script is older than these pages expect —
+  // the usual cause of "the new field is not saved to the sheet".
+  function checkVersion(version) {
+    const el = $("verWarn");
+    if (version === EXPECTED_VERSION) {
+      el.style.display = "none";
+      return;
+    }
+    el.textContent = "⚠ Backend script is out of date (server: " + (version || "unknown") +
+      ", expected: " + EXPECTED_VERSION + "). In Apps Script: Deploy → Manage deployments → " +
+      "edit → Version: New version → Deploy.";
+    el.style.display = "block";
+  }
+
+  function renderTable() {
+    const wrap = $("tableWrap");
+    const rows = currentRows;
+    if (!rows.length) {
+      wrap.innerHTML = '<p class="empty">No registrations yet. Be the first!</p>';
+      return;
+    }
+
+    // Search filters display only; numbering keeps the original order.
+    const q = $("search").value.trim().toLowerCase();
+    const filtered = rows
+      .map((r, i) => ({ r, n: i + 1 }))
+      .filter(({ r }) => !q ||
+        String(r.name).toLowerCase().includes(q) ||
+        batchLabel(r.batch).toLowerCase().includes(q) ||
+        String(r.mode).toLowerCase().includes(q) ||
+        String(r.course).toLowerCase().includes(q) ||
+        String(r.studentType).toLowerCase().includes(q));
+
+    if (!filtered.length) {
+      wrap.innerHTML = '<p class="empty">No matches for your search.</p>';
+      return;
+    }
+
+    const header = `
+      <tr>
+        <th>#</th>
+        <th>Name</th>
+        <th>Course</th>
+        <th>Batch timing</th>
+        <th>Email</th>
+        <th>Mobile</th>
+        <th>Mode</th>
+        <th>Student type</th>
+      </tr>`;
+    const body = filtered.map(({ r, n }) => {
+      const modeClass = (r.mode || "").toLowerCase() === "online" ? "mode-online" : "mode-offline";
+      return `
+        <tr>
+          <td class="num">${n}</td>
+          <td>${esc(r.name)}</td>
+          <td><span class="course-tag ${courseClass(r.course)}">${esc(r.course || "—")}</span></td>
+          <td>${esc(batchLabel(r.batch))}</td>
+          <td>${esc(r.email)}</td>
+          <td>${esc(r.mobile)}</td>
+          <td><span class="mode-tag ${modeClass}">${esc(r.mode)}</span></td>
+          <td>${esc(r.studentType)}</td>
+        </tr>`;
+    }).join("");
+    wrap.innerHTML = `<table>${header}${body}</table>`;
+  }
+
+  // Gen AI rows get the blue tag, FDE (and anything else) the amber one.
+  function courseClass(course) {
+    return String(course || "").toLowerCase().indexOf("gen ai") === 0 ? "course-genai" : "course-fde";
+  }
+
+  // Rows saved before the plain-text fix come back as a full date string, e.g.
+  // "Sat Dec 30 1899 07:30:00 GMT+0530 (India Standard Time)". Show just the
+  // timing. The HH:MM in that string is already the correct local time, so this
+  // reads it straight out rather than re-parsing the date.
+  function batchLabel(v) {
+    const s = String(v == null ? "" : v).trim();
+    if (/^\d{1,2}:\d{2}/.test(s)) return s;           // already "7:30 AM"
+    const m = s.match(/\b(\d{1,2}):(\d{2})(?::\d{2})?\b/);
+    if (!m) return s;
+    const h = parseInt(m[1], 10);
+    const ampm = h < 12 ? "AM" : "PM";
+    const h12 = h % 12 === 0 ? 12 : h % 12;
+    return h12 + ":" + m[2] + " " + ampm;
+  }
+
+  // ---- Helpers ----
+  // Apps Script web apps handle CORS best with text/plain POST bodies.
+  async function postJSON(data) {
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(data)
+    });
+    return parseJSON(res);
+  }
+
+  // Apps Script sometimes answers with an HTML page (sign-in screen, error
+  // page, stale deployment). res.json() would blow up with a useless message,
+  // so parse the text ourselves and report what actually came back.
+  async function parseJSON(res) {
+    const text = await res.text();
+    try {
+      return JSON.parse(text);
+    } catch (e) {
+      throw new Error("server returned HTTP " + res.status + " with a non-JSON response — " +
+        "check that the Apps Script web app is deployed with access set to \"Anyone\". " +
+        text.slice(0, 100).replace(/\s+/g, " "));
+    }
+  }
+
+  function esc(s) {
+    return String(s == null ? "" : s)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+
+  // Initial load
+  loadList();
+</script>
+</body>
+</html>

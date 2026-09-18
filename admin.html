@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NareshIT — Gen AI, Agentic AI &amp; FDE Admin</title>
+<style>
+  :root {
+    --bg: #0f1220;
+    --card: #1a1f35;
+    --accent: #6c8cff;
+    --accent-2: #9b6cff;
+    --text: #e8ebf5;
+    --muted: #9aa3c0;
+    --border: #2a3150;
+    --ok: #3ddc97;
+    --err: #ff6b6b;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: radial-gradient(1200px 600px at 20% -10%, #23294a 0%, var(--bg) 55%);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 24px 16px 60px;
+  }
+  .wrap { max-width: 900px; margin: 0 auto; }
+  header { text-align: center; margin-bottom: 28px; }
+  .brand {
+    display: inline-flex; align-items: center; gap: 10px;
+    margin-bottom: 12px; padding: 8px 16px 8px 8px; border-radius: 999px;
+    background: #fff; box-shadow: 0 6px 18px rgba(0,0,0,.25);
+  }
+  .brand img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+  .brand b { color: #1a3c8f; font-size: 16px; font-weight: 800; letter-spacing: .3px; }
+  .brand b em { color: #e2372f; font-style: normal; }
+  .site-footer {
+    margin-top: 32px; padding: 22px; border-radius: 16px;
+    background: var(--card); border: 1px solid var(--border);
+    text-align: center; color: var(--muted); font-size: 13px; line-height: 1.7;
+  }
+  .site-footer .fbrand { color: var(--text); font-weight: 700; font-size: 15px; }
+  .site-footer .fbrand em { color: #e2372f; font-style: normal; }
+  .site-footer a { color: var(--accent); text-decoration: none; }
+  .site-footer a:hover { text-decoration: underline; }
+  .site-footer .tagline { margin: 4px 0 10px; }
+  .site-footer .row2 { display: flex; gap: 8px 18px; justify-content: center; flex-wrap: wrap; }
+  .site-footer .copy { margin-top: 12px; opacity: .8; font-size: 12px; }
+  .site-footer .credit { color: var(--text); font-weight: 600; }
+  header h1 {
+    font-size: 28px; margin: 0 0 6px;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  header p { color: var(--muted); margin: 0; }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 22px;
+    margin-bottom: 24px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.25);
+  }
+  .card h2 { margin: 0 0 16px; font-size: 18px; }
+  label { display: block; font-size: 13px; color: var(--muted); margin: 12px 0 6px; }
+  input {
+    width: 100%; padding: 11px 13px; border-radius: 10px;
+    border: 1px solid var(--border); background: #12162a; color: var(--text);
+    font-size: 14px; outline: none; transition: border .15s;
+  }
+  input:focus { border-color: var(--accent); }
+  button {
+    margin-top: 18px; width: 100%; padding: 12px; border: none; border-radius: 10px;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    color: #fff; font-size: 15px; font-weight: 600; cursor: pointer;
+    transition: transform .08s, opacity .15s;
+  }
+  button:hover { opacity: .92; }
+  button:active { transform: translateY(1px); }
+  button:disabled { opacity: .55; cursor: not-allowed; }
+  .msg { margin-top: 12px; font-size: 14px; min-height: 18px; }
+  .msg.ok { color: var(--ok); }
+  .msg.err { color: var(--err); }
+  table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 14px; }
+  th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--border); }
+  th { color: var(--muted); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
+  td.num { color: var(--muted); width: 34px; }
+  .mode-tag { padding: 3px 9px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+  .mode-online { background: rgba(61,220,151,.15); color: var(--ok); }
+  .mode-offline { background: rgba(155,108,255,.18); color: var(--accent-2); }
+  .course-tag { padding: 3px 9px; border-radius: 999px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+  .course-genai { background: rgba(108,140,255,.18); color: var(--accent); }
+  .course-fde { background: rgba(255,193,86,.18); color: #ffc156; }
+  .admin-bar { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; }
+  .admin-bar > div { flex: 1 1 240px; }
+  .admin-bar button { width: auto; margin-top: 0; padding: 11px 20px; }
+  .small { font-size: 12px; color: var(--muted); }
+  .refresh { background: none; border: 1px solid var(--border); color: var(--muted); width: auto; padding: 6px 14px; font-size: 13px; margin: 0; }
+  .refresh:hover { color: var(--text); }
+  .list-head { display: flex; justify-content: space-between; align-items: center; }
+  .empty { color: var(--muted); text-align: center; padding: 20px 0; }
+  .stats { display: flex; gap: 12px; flex-wrap: wrap; margin: 6px 0 12px; }
+  .stat {
+    flex: 1 1 120px; background: #12162a; border: 1px solid var(--border);
+    border-radius: 12px; padding: 12px 14px;
+  }
+  .stat .val { font-size: 24px; font-weight: 700; }
+  .stat .lbl { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+  .stat.total .val { color: var(--accent); }
+  .stat.online .val { color: var(--ok); }
+  .stat.offline .val { color: var(--accent-2); }
+  .stat.genai .val { color: var(--accent); }
+  .stat.fde .val { color: #ffc156; }
+  .top-link {
+    position: fixed; top: 16px; right: 16px; z-index: 50;
+    padding: 9px 16px; font-size: 13px; text-decoration: none;
+    border: 1px solid var(--border); background: rgba(26,31,53,.9);
+    color: var(--text); border-radius: 10px; backdrop-filter: blur(4px);
+  }
+  .top-link:hover { border-color: var(--accent); }
+  #dashboard { display: none; }
+</style>
+</head>
+<body>
+<a class="top-link" href="index.html">← Registration</a>
+<div class="wrap">
+  <header>
+    <div class="brand"><img src="nareshit-logo.jpg" alt="NareshIT logo" /><b>Naresh<em>IT</em></b></div>
+    <h1>Admin Dashboard</h1>
+    <p>Gen AI &amp; Agentic AI · FDE interest — Veera sir's Multi-Cloud DevOps students</p>
+  </header>
+
+  <!-- Login -->
+  <div class="card" id="loginCard">
+    <h2>Admin access</h2>
+    <p class="small">Enter the admin key to view full (unmasked) details.</p>
+    <div class="admin-bar">
+      <div>
+        <label for="adminKey">Admin key</label>
+        <input id="adminKey" type="password" placeholder="Enter admin key" autofocus />
+      </div>
+      <button id="adminBtn" type="button">Login</button>
+    </div>
+    <div class="msg" id="adminMsg"></div>
+  </div>
+
+  <!-- Dashboard (shown after login) -->
+  <div id="dashboard">
+    <p class="msg err" id="verWarn" style="display:none;"></p>
+    <div class="card">
+      <div class="stats" id="stats">
+        <div class="stat total"><div class="val" id="statTotal">0</div><div class="lbl">Total registered</div></div>
+        <div class="stat genai"><div class="val" id="statGenAI">0</div><div class="lbl">Gen AI</div></div>
+        <div class="stat fde"><div class="val" id="statFDE">0</div><div class="lbl">FDE</div></div>
+        <div class="stat online"><div class="val" id="statOnline">0</div><div class="lbl">Online</div></div>
+        <div class="stat offline"><div class="val" id="statOffline">0</div><div class="lbl">Offline</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="list-head">
+        <h2 style="margin:0;">All registrations</h2>
+        <div style="display:flex; gap:10px;">
+          <button class="refresh" id="exportBtn" type="button">⬇ Export CSV</button>
+          <button class="refresh" id="refreshBtn" type="button">↻ Refresh</button>
+          <button class="refresh" id="logoutBtn" type="button">Logout</button>
+        </div>
+      </div>
+      <input id="search" type="text" placeholder="🔍 Search by name, course, batch timing, mode, email or mobile…" style="margin:10px 0 4px;" />
+      <div id="tableWrap">
+        <p class="empty">Loading…</p>
+      </div>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="fbrand">Naresh<em>IT</em> — Naresh i Technologies</div>
+    <div class="tagline">No.1 Software Training Institute — Classroom &amp; Online Training</div>
+    <div class="row2">
+      <span>📍 2nd Floor, Durga Bhavani Plaza, Ameerpet, Hyderabad</span>
+      <span>📞 040-2374 6666</span>
+      <span>💬 +91-8179191999</span>
+    </div>
+    <div class="row2" style="margin-top:6px;">
+      <a href="https://nareshit.in/" target="_blank" rel="noopener">nareshit.in</a>
+      <a href="https://www.youtube.com/channel/UC4o8Fdpv3g_AjgShAeivqpA" target="_blank" rel="noopener">YouTube</a>
+      <a href="https://t.me/nareshit" target="_blank" rel="noopener">Telegram</a>
+      <a href="https://in.linkedin.com/company/naresh-i-technologies" target="_blank" rel="noopener">LinkedIn</a>
+    </div>
+    <div class="copy">Gen AI &amp; Agentic AI · FDE batches · Guided by <span class="credit">Veera sir</span> · © 2026 Naresh i Technologies</div>
+  </footer>
+</div>
+
+<script>
+  // ====== CONFIG ======
+  // Must match the API_URL used in index.html (your Apps Script /exec URL)
+  const API_URL = "https://script.google.com/macros/s/AKfycbxpgCF-kOOlhp9mOfHeHTBlojbCcQ2KOoGMUXT_eSCAfbJgmmAp0PUIZ005YausISn-/exec";
+  // Must match VERSION in Code.gs.
+  const EXPECTED_VERSION = "v4-batchtext";
+  // =====================
+
+  let adminKey = null; // held in memory only, never stored
+  let currentRows = [];
+
+  const $ = (id) => document.getElementById(id);
+
+  // ---- Disable right-click (context menu) ----
+  document.addEventListener("contextmenu", (e) => e.preventDefault());
+
+  // ---- Login ----
+  $("adminBtn").addEventListener("click", login);
+  $("adminKey").addEventListener("keydown", (e) => { if (e.key === "Enter") login(); });
+
+  function login() {
+    const key = $("adminKey").value.trim();
+    const msg = $("adminMsg");
+    if (!key) {
+      msg.textContent = "Enter the admin key first."; msg.className = "msg err";
+      return;
+    }
+    adminKey = key;
+    msg.textContent = "Verifying…"; msg.className = "msg";
+    loadList();
+  }
+
+  $("logoutBtn").addEventListener("click", () => {
+    adminKey = null;
+    currentRows = [];
+    $("adminKey").value = "";
+    $("adminMsg").textContent = "";
+    $("dashboard").style.display = "none";
+    $("loginCard").style.display = "block";
+    $("adminKey").focus();
+  });
+
+  $("refreshBtn").addEventListener("click", loadList);
+  $("search").addEventListener("input", renderTable);
+
+  // ---- CSV export ----
+  $("exportBtn").addEventListener("click", () => {
+    if (!currentRows.length) return;
+    const header = ["#", "Name", "Course", "Batch timing", "Email", "Mobile", "Mode", "Student type"];
+    const lines = [header.join(",")];
+    currentRows.forEach((r, i) => {
+      lines.push([
+        i + 1, csv(r.name), csv(r.course), csv(batchLabel(r.batch)), csv(r.email), csv(r.mobile), csv(r.mode), csv(r.studentType)
+      ].join(","));
+    });
+    const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "genai-registrations.csv";
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  function csv(v) {
+    const s = String(v == null ? "" : v);
+    return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+  }
+
+  // ---- Load full list ----
+  async function loadList() {
+    try {
+      const params = new URLSearchParams({ action: "list", key: adminKey });
+      const res = await fetch(API_URL + "?" + params.toString());
+      const text = await res.text();
+      const msg = $("adminMsg");
+
+      let json;
+      try {
+        json = JSON.parse(text);
+      } catch (e) {
+        msg.textContent = "Server returned HTTP " + res.status + " with a non-JSON response. " +
+          "Check the Apps Script deployment (access must be \"Anyone\").";
+        msg.className = "msg err";
+        return;
+      }
+
+      if (json.error && !json.admin) {
+        msg.textContent = "❌ " + json.error;
+        msg.className = "msg err";
+        adminKey = null;
+        return;
+      }
+
+      if (!json.admin) {
+        msg.textContent = "❌ Invalid admin key.";
+        msg.className = "msg err";
+        adminKey = null;
+        return;
+      }
+
+      // Show dashboard
+      $("loginCard").style.display = "none";
+      $("dashboard").style.display = "block";
+
+      if (json.version !== EXPECTED_VERSION) {
+        $("verWarn").textContent = "⚠ Backend script is out of date (server: " +
+          (json.version || "unknown") + ", expected: " + EXPECTED_VERSION +
+          "). Re-deploy: Deploy → Manage deployments → edit → Version: New version → Deploy.";
+        $("verWarn").style.display = "block";
+      } else {
+        $("verWarn").style.display = "none";
+      }
+
+      currentRows = json.data || [];
+      updateStats(currentRows);
+      renderTable();
+    } catch (err) {
+      $("adminMsg").textContent = "Could not load: " + (err && err.message ? err.message : err);
+      $("adminMsg").className = "msg err";
+    }
+  }
+
+  function updateStats(rows) {
+    let online = 0, offline = 0, genai = 0, fde = 0;
+    rows.forEach((r) => {
+      const m = String(r.mode || "").toLowerCase();
+      if (m === "online") online++;
+      else if (m === "offline") offline++;
+
+      if (isGenAI(r.course)) genai++;
+      else if (String(r.course || "").trim()) fde++;
+    });
+    $("statTotal").textContent = rows.length;
+    $("statGenAI").textContent = genai;
+    $("statFDE").textContent = fde;
+    $("statOnline").textContent = online;
+    $("statOffline").textContent = offline;
+  }
+
+  function isGenAI(course) {
+    return String(course || "").toLowerCase().indexOf("gen ai") === 0;
+  }
+
+  function courseClass(course) {
+    return isGenAI(course) ? "course-genai" : "course-fde";
+  }
+
+  // Rows saved before the plain-text fix come back as a full date string, e.g.
+  // "Sat Dec 30 1899 07:30:00 GMT+0530 (India Standard Time)". Show just the
+  // timing. The HH:MM in that string is already the correct local time, so this
+  // reads it straight out rather than re-parsing the date.
+  function batchLabel(v) {
+    const s = String(v == null ? "" : v).trim();
+    if (/^\d{1,2}:\d{2}/.test(s)) return s;           // already "7:30 AM"
+    const m = s.match(/\b(\d{1,2}):(\d{2})(?::\d{2})?\b/);
+    if (!m) return s;
+    const h = parseInt(m[1], 10);
+    const ampm = h < 12 ? "AM" : "PM";
+    const h12 = h % 12 === 0 ? 12 : h % 12;
+    return h12 + ":" + m[2] + " " + ampm;
+  }
+
+  function renderTable() {
+    const wrap = $("tableWrap");
+    const rows = currentRows;
+    if (!rows.length) {
+      wrap.innerHTML = '<p class="empty">No registrations yet.</p>';
+      return;
+    }
+
+    // Numbering stays based on full list order; search only filters display.
+    const q = $("search").value.trim().toLowerCase();
+    const filtered = rows
+      .map((r, i) => ({ r, n: i + 1 }))
+      .filter(({ r }) => !q ||
+        String(r.name).toLowerCase().includes(q) ||
+        batchLabel(r.batch).toLowerCase().includes(q) ||
+        String(r.mode).toLowerCase().includes(q) ||
+        String(r.course).toLowerCase().includes(q) ||
+        String(r.email).toLowerCase().includes(q) ||
+        String(r.mobile).toLowerCase().includes(q) ||
+        String(r.studentType).toLowerCase().includes(q));
+
+    if (!filtered.length) {
+      wrap.innerHTML = '<p class="empty">No matches for your search.</p>';
+      return;
+    }
+
+    const header = `
+      <tr>
+        <th>#</th>
+        <th>Name</th>
+        <th>Course</th>
+        <th>Batch timing</th>
+        <th>Email</th>
+        <th>Mobile</th>
+        <th>Mode</th>
+        <th>Student type</th>
+      </tr>`;
+    const body = filtered.map(({ r, n }) => {
+      const modeClass = (r.mode || "").toLowerCase() === "online" ? "mode-online" : "mode-offline";
+      return `
+        <tr>
+          <td class="num">${n}</td>
+          <td>${esc(r.name)}</td>
+          <td><span class="course-tag ${courseClass(r.course)}">${esc(r.course || "—")}</span></td>
+          <td>${esc(batchLabel(r.batch))}</td>
+          <td>${esc(r.email)}</td>
+          <td>${esc(r.mobile)}</td>
+          <td><span class="mode-tag ${modeClass}">${esc(r.mode)}</span></td>
+          <td>${esc(r.studentType)}</td>
+        </tr>`;
+    }).join("");
+    wrap.innerHTML = `<table>${header}${body}</table>`;
+  }
+
+  function esc(s) {
+    return String(s == null ? "" : s)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+</script>
+</body>
+</html>
