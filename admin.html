@@ -86,9 +86,6 @@
   th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--border); }
   th { color: var(--muted); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
   td.num { color: var(--muted); width: 34px; }
-  .mode-tag { padding: 3px 9px; border-radius: 999px; font-size: 12px; font-weight: 600; }
-  .mode-online { background: rgba(61,220,151,.15); color: var(--ok); }
-  .mode-offline { background: rgba(155,108,255,.18); color: var(--accent-2); }
   .course-tag { padding: 3px 9px; border-radius: 999px; font-size: 12px; font-weight: 600; white-space: nowrap; }
   .course-genai { background: rgba(108,140,255,.18); color: var(--accent); }
   .course-fde { background: rgba(255,193,86,.18); color: #ffc156; }
@@ -108,8 +105,6 @@
   .stat .val { font-size: 24px; font-weight: 700; }
   .stat .lbl { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
   .stat.total .val { color: var(--accent); }
-  .stat.online .val { color: var(--ok); }
-  .stat.offline .val { color: var(--accent-2); }
   .stat.genai .val { color: var(--accent); }
   .stat.fde .val { color: #ffc156; }
   .top-link {
@@ -153,8 +148,6 @@
         <div class="stat total"><div class="val" id="statTotal">0</div><div class="lbl">Total registered</div></div>
         <div class="stat genai"><div class="val" id="statGenAI">0</div><div class="lbl">Gen AI</div></div>
         <div class="stat fde"><div class="val" id="statFDE">0</div><div class="lbl">FDE</div></div>
-        <div class="stat online"><div class="val" id="statOnline">0</div><div class="lbl">Online</div></div>
-        <div class="stat offline"><div class="val" id="statOffline">0</div><div class="lbl">Offline</div></div>
       </div>
     </div>
 
@@ -167,7 +160,7 @@
           <button class="refresh" id="logoutBtn" type="button">Logout</button>
         </div>
       </div>
-      <input id="search" type="text" placeholder="🔍 Search by name, course, batch timing, mode, email or mobile…" style="margin:10px 0 4px;" />
+      <input id="search" type="text" placeholder="🔍 Search by name, course, batch timing, email or mobile…" style="margin:10px 0 4px;" />
       <div id="tableWrap">
         <p class="empty">Loading…</p>
       </div>
@@ -197,7 +190,7 @@
   // Must match the API_URL used in index.html (your Apps Script /exec URL)
   const API_URL = "https://script.google.com/macros/s/AKfycbxpgCF-kOOlhp9mOfHeHTBlojbCcQ2KOoGMUXT_eSCAfbJgmmAp0PUIZ005YausISn-/exec";
   // Must match VERSION in Code.gs.
-  const EXPECTED_VERSION = "v4-batchtext";
+  const EXPECTED_VERSION = "v5-online-intl";
   // =====================
 
   let adminKey = null; // held in memory only, never stored
@@ -240,11 +233,11 @@
   // ---- CSV export ----
   $("exportBtn").addEventListener("click", () => {
     if (!currentRows.length) return;
-    const header = ["#", "Name", "Course", "Batch timing", "Email", "Mobile", "Mode", "Student type"];
+    const header = ["#", "Name", "Course", "Batch timing", "Email", "Mobile", "Student type"];
     const lines = [header.join(",")];
     currentRows.forEach((r, i) => {
       lines.push([
-        i + 1, csv(r.name), csv(r.course), csv(batchLabel(r.batch)), csv(r.email), csv(r.mobile), csv(r.mode), csv(r.studentType)
+        i + 1, csv(r.name), csv(r.course), csv(batchLabel(r.batch)), csv(r.email), csv(r.mobile), csv(r.studentType)
       ].join(","));
     });
     const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8" });
@@ -316,20 +309,14 @@
   }
 
   function updateStats(rows) {
-    let online = 0, offline = 0, genai = 0, fde = 0;
+    let genai = 0, fde = 0;
     rows.forEach((r) => {
-      const m = String(r.mode || "").toLowerCase();
-      if (m === "online") online++;
-      else if (m === "offline") offline++;
-
       if (isGenAI(r.course)) genai++;
       else if (String(r.course || "").trim()) fde++;
     });
     $("statTotal").textContent = rows.length;
     $("statGenAI").textContent = genai;
     $("statFDE").textContent = fde;
-    $("statOnline").textContent = online;
-    $("statOffline").textContent = offline;
   }
 
   function isGenAI(course) {
@@ -370,7 +357,6 @@
       .filter(({ r }) => !q ||
         String(r.name).toLowerCase().includes(q) ||
         batchLabel(r.batch).toLowerCase().includes(q) ||
-        String(r.mode).toLowerCase().includes(q) ||
         String(r.course).toLowerCase().includes(q) ||
         String(r.email).toLowerCase().includes(q) ||
         String(r.mobile).toLowerCase().includes(q) ||
@@ -389,11 +375,9 @@
         <th>Batch timing</th>
         <th>Email</th>
         <th>Mobile</th>
-        <th>Mode</th>
         <th>Student type</th>
       </tr>`;
     const body = filtered.map(({ r, n }) => {
-      const modeClass = (r.mode || "").toLowerCase() === "online" ? "mode-online" : "mode-offline";
       return `
         <tr>
           <td class="num">${n}</td>
@@ -402,7 +386,6 @@
           <td>${esc(batchLabel(r.batch))}</td>
           <td>${esc(r.email)}</td>
           <td>${esc(r.mobile)}</td>
-          <td><span class="mode-tag ${modeClass}">${esc(r.mode)}</span></td>
           <td>${esc(r.studentType)}</td>
         </tr>`;
     }).join("");

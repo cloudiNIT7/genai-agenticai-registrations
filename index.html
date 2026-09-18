@@ -89,9 +89,6 @@
   th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--border); }
   th { color: var(--muted); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
   td.num { color: var(--muted); width: 34px; }
-  .mode-tag { padding: 3px 9px; border-radius: 999px; font-size: 12px; font-weight: 600; }
-  .mode-online { background: rgba(61,220,151,.15); color: var(--ok); }
-  .mode-offline { background: rgba(155,108,255,.18); color: var(--accent-2); }
   .course-tag { padding: 3px 9px; border-radius: 999px; font-size: 12px; font-weight: 600; white-space: nowrap; }
   .course-genai { background: rgba(108,140,255,.18); color: var(--accent); }
   .course-fde { background: rgba(255,193,86,.18); color: #ffc156; }
@@ -128,7 +125,7 @@
   <header>
     <div class="brand"><img src="nareshit-logo.jpg" alt="NareshIT logo" /><b>Naresh<em>IT</em></b></div>
     <h1>Gen AI &amp; Agentic AI · FDE — Interest Registration</h1>
-    <p>For current <strong>Multi-Cloud DevOps</strong> students of <strong>Veera sir</strong> — register your interest for the upcoming <strong>Gen AI &amp; Agentic AI</strong> or <strong>FDE</strong> batch.</p>
+    <p>For current <strong>Multi-Cloud DevOps</strong> students of <strong>Veera sir</strong> — register your interest for the upcoming <strong>Gen AI &amp; Agentic AI</strong> or <strong>FDE</strong> batch. All sessions are <strong>online</strong>.</p>
   </header>
 
   <!-- Registration form -->
@@ -157,17 +154,6 @@
           </select>
         </div>
         <div>
-          <label for="mode">Preferred mode</label>
-          <select id="mode" name="mode" required>
-            <option value="">Select…</option>
-            <option value="Online">Online</option>
-            <option value="Offline">Offline</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="row">
-        <div style="flex: 0 1 50%; max-width: 50%;">
           <label for="studentType">Student type</label>
           <select id="studentType" name="studentType" required>
             <option value="">Select…</option>
@@ -184,7 +170,8 @@
         </div>
         <div>
           <label for="mobile">Mobile number</label>
-          <input id="mobile" name="mobile" type="tel" placeholder="10-digit mobile" pattern="[0-9]{10}" maxlength="10" required />
+          <input id="mobile" name="mobile" type="tel" placeholder="10-digit, or +1… with country code"
+                 pattern="[0-9+\-\s()]{10,18}" maxlength="18" required />
         </div>
       </div>
 
@@ -201,7 +188,7 @@
     </div>
     <p class="badge">Public view — email & mobile are hidden.</p>
     <p class="msg err" id="verWarn" style="display:none;"></p>
-    <input id="search" type="text" placeholder="🔍 Search by name, course, batch timing, or mode…" style="margin:6px 0 4px;" />
+    <input id="search" type="text" placeholder="🔍 Search by name, course, or batch timing…" style="margin:6px 0 4px;" />
     <div id="tableWrap">
       <p class="empty" id="loadingMsg">Loading…</p>
     </div>
@@ -231,7 +218,7 @@
   const API_URL = "https://script.google.com/macros/s/AKfycbxpgCF-kOOlhp9mOfHeHTBlojbCcQ2KOoGMUXT_eSCAfbJgmmAp0PUIZ005YausISn-/exec";
   // Must match VERSION in Code.gs. If the server reports anything else, the
   // Apps Script deployment is stale and needs a new version deployed.
-  const EXPECTED_VERSION = "v4-batchtext";
+  const EXPECTED_VERSION = "v5-online-intl";
   // =====================
 
   let currentRows = []; // last loaded rows (for search)
@@ -278,13 +265,14 @@
       batch: $("batch").value.trim(),
       email: $("email").value.trim(),
       mobile: $("mobile").value.trim(),
-      mode: $("mode").value,
       studentType: $("studentType").value,
       course: $("course").value
     };
 
-    if (!/^[0-9]{10}$/.test(data.mobile)) {
-      msg.textContent = "Please enter a valid 10-digit mobile number.";
+    // Digits only for the check: 10 for India, up to 13 with a country code.
+    const digits = data.mobile.replace(/\D/g, "");
+    if (digits.length < 10 || digits.length > 13) {
+      msg.textContent = "Enter a valid mobile number — 10 digits, or up to 13 including the country code.";
       msg.className = "msg err";
       return;
     }
@@ -359,7 +347,6 @@
       .filter(({ r }) => !q ||
         String(r.name).toLowerCase().includes(q) ||
         batchLabel(r.batch).toLowerCase().includes(q) ||
-        String(r.mode).toLowerCase().includes(q) ||
         String(r.course).toLowerCase().includes(q) ||
         String(r.studentType).toLowerCase().includes(q));
 
@@ -376,11 +363,9 @@
         <th>Batch timing</th>
         <th>Email</th>
         <th>Mobile</th>
-        <th>Mode</th>
         <th>Student type</th>
       </tr>`;
     const body = filtered.map(({ r, n }) => {
-      const modeClass = (r.mode || "").toLowerCase() === "online" ? "mode-online" : "mode-offline";
       return `
         <tr>
           <td class="num">${n}</td>
@@ -389,7 +374,6 @@
           <td>${esc(batchLabel(r.batch))}</td>
           <td>${esc(r.email)}</td>
           <td>${esc(r.mobile)}</td>
-          <td><span class="mode-tag ${modeClass}">${esc(r.mode)}</span></td>
           <td>${esc(r.studentType)}</td>
         </tr>`;
     }).join("");
